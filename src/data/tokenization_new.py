@@ -1,8 +1,10 @@
-import torch
-import numpy as np
-from transformers import BartTokenizer, AutoTokenizer
-from itertools import chain
 from functools import cmp_to_key
+from itertools import chain
+
+import numpy as np
+import torch
+from transformers import AutoTokenizer, BartTokenizer
+
 # from src.utils import TaskType
 
 
@@ -41,6 +43,7 @@ class ConditionTokenizer:
                  ANP_generate_token='<<AOG>>'):
         self._base_tokenizer = BartTokenizer.from_pretrained(
             pretrained_model_name, )
+        print("-------------------Hello-----------------------------")
         # self._base_tokenizer = AutoTokenizer.from_pretrained(
         #     pretrained_model_name)
 
@@ -53,6 +56,7 @@ class ConditionTokenizer:
         unique_no_split_tokens = self._base_tokenizer.unique_no_split_tokens
         self._base_tokenizer.unique_no_split_tokens = unique_no_split_tokens + self.additional_special_tokens
         self.unique_no_split_tokens = self._base_tokenizer.unique_no_split_tokens
+        print("-------------------Hello 2-----------------------------")
 
         self._base_tokenizer.add_tokens(self.additional_special_tokens)
         self.cls_token = cls_token
@@ -71,6 +75,7 @@ class ConditionTokenizer:
         self.senti_token = senti_token
         self.ANP_token = ANP_token
         self.ANP_generate_token = ANP_generate_token
+        print("-------------------Hello 3-----------------------------")
 
         self.aesc_token = aesc_token
         self.pos_token = pos_token
@@ -85,6 +90,7 @@ class ConditionTokenizer:
         self.img_feat_id = self.convert_tokens_to_ids(img_feat)
         self.begin_img_id = self.convert_tokens_to_ids(begin_img)
         self.end_img_id = self.convert_tokens_to_ids(end_img)
+        print("-------------------Hello 4-----------------------------")
 
         self.ae_token_id = self.convert_tokens_to_ids(ae_token)
         self.sc_token_id = self.convert_tokens_to_ids(sc_token)
@@ -102,6 +108,7 @@ class ConditionTokenizer:
         self.vocab_size = self._base_tokenizer.vocab_size
         self.bos_token = self._base_tokenizer.bos_token
         self.bos_token_id = self._base_tokenizer.bos_token_id
+        print("-------------------Hello 5-----------------------------")
 
         self.eos_token = self._base_tokenizer.eos_token
         self.eos_token_id = self._base_tokenizer.eos_token_id
@@ -155,6 +162,7 @@ class ConditionTokenizer:
             self.mapping2id[key] = key_id[0]
             self.mapping2targetid[key] = len(self.mapping2targetid) + 2
         print(self.mapping2id)
+        print("-------------------Hello 6-----------------------------")
 
     def encode(self, *args, **kwargs):
         return self._base_tokenizer(*args, **kwargs)
