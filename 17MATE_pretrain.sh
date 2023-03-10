@@ -16,5 +16,5 @@ python twitter_ae_training.py \
           --seed 55 \
           --text_only 0 \
           --task twitter_ae \
-          --checkpoint ./checkpoint/pytorch_model.bin
+          --checkpoint ../pytorch_model.bin
 done
