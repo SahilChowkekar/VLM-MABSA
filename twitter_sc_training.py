@@ -29,7 +29,7 @@ from torch.utils.tensorboard import SummaryWriter
 from transformers import AdamW
 import wandb
 
-wandb.init(project='Twitter-2015')
+wandb.init(project='Twitter-2017')
 config = wandb.config
 
 def main(rank, args):
@@ -336,7 +336,7 @@ def parse_args():
                         type=str,
                         help='where to save the checkpoint')
     parser.add_argument('--bart_model',
-                        default='facebook/bart-base',
+                        default='facebook/bart-large',
                         type=str,
                         help='bart pretrain model')
     # path
