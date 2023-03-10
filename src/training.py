@@ -6,6 +6,10 @@ import src.model.utils as utils
 import src.eval_utils as eval_utils
 # from src.utils import TaskType
 
+import wandb
+
+config = wandb.config
+
 
 def pretrain(task_list,
              epoch,
@@ -147,11 +151,14 @@ def fine_tune(epoch,
 
             print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
                 epoch + 1, args.epochs, i + 1, total_step, loss.item()))
+
+            wandb.log({"Loss: {:.4f}".format(loss.item())})
         # Backward and optimize
 
         cur_step = i + 1 + epoch * total_step
         t_step = args.epochs * total_step
         liner_warm_rate = utils.liner_warmup(cur_step, t_step, args.warmup)
+        logger.info("Linear Warm Rate - {}".format(liner_warm_rate))
         utils.set_lr(optimizer, liner_warm_rate * args.lr)
 
         optimizer.zero_grad()

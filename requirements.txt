@@ -1,4 +1,5 @@
 torch==1.6.0
 transformers==3.4.0
-fastnlp
-h5py
+FastNLP==0.7.0
+h5py==3.1.0
+wandb
