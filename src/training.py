@@ -158,7 +158,7 @@ def fine_tune(epoch,
         cur_step = i + 1 + epoch * total_step
         t_step = args.epochs * total_step
         liner_warm_rate = utils.liner_warmup(cur_step, t_step, args.warmup)
-        logger.info("Linear Warm Rate - {}".format(liner_warm_rate))
+        wandb.log({"Linear Warm Rate": liner_warm_rate})
         utils.set_lr(optimizer, liner_warm_rate * args.lr)
 
         optimizer.zero_grad()

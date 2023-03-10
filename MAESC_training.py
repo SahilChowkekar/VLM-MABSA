@@ -213,13 +213,17 @@ def main(rank, args):
             logger.info('DEV  aesc_p:{} aesc_r:{} aesc_f:{}'.format(
                 res_dev['aesc_pre'], res_dev['aesc_rec'], res_dev['aesc_f']))
 
-            wandb.log({"Dev_AESC_Pre" : res_dev['aesc_pre'], "Dev_AESC_R" : res_dev['aesc_rec'], "Dev_AESC_F": res_dev['aesc_f']})
+            wandb.log({"Dev_AESC_Pre" : res_dev['aesc_pre']})
+            wandb.log({"Dev_AESC_R" : res_dev['aesc_rec']})
+            wandb.log({"Dev_AESC_F": res_dev['aesc_f']})
 
             logger.info('TEST  aesc_p:{} aesc_r:{} aesc_f:{}'.format(
                 res_test['aesc_pre'], res_test['aesc_rec'],
                 res_test['aesc_f']))
 
-            wandb.log({"Test_AESC_Pre" : res_test['aesc_pre'], "Test_AESC_Pre" : res_test['aesc_rec'], "Test_AESC_F": res_test['aesc_f']})
+            wandb.log({"Test_AESC_Pre" : res_test['aesc_pre']})
+            wandb.log({"Test_AESC_Pre" : res_test['aesc_rec']})
+            wandb.log({"Test_AESC_F": res_test['aesc_f']})
 
             save_flag = False
             if best_dev_res is None:
