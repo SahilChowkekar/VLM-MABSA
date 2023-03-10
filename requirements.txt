@@ -3,3 +3,4 @@ transformers==3.4.0
 FastNLP==0.7.0
 h5py==3.1.0
 wandb==0.13.11
+gdown
