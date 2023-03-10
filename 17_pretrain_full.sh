@@ -14,6 +14,6 @@ do
           --grad_clip 5 \
           --warmup 0.1 \
           --seed 66 \
-          --checkpoint ./checkpoint/pytorch_model.bin
+          --checkpoint ../pytorch_model.bin
           
 done
