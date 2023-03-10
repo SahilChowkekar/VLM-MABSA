@@ -152,7 +152,7 @@ def fine_tune(epoch,
             print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
                 epoch + 1, args.epochs, i + 1, total_step, loss.item()))
 
-            wandb.log({"Loss: {:.4f}".format(loss.item())})
+            wandb.log({"Loss" : loss.item()})
         # Backward and optimize
 
         cur_step = i + 1 + epoch * total_step
