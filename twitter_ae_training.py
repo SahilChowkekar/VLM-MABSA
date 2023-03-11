@@ -298,7 +298,7 @@ def parse_args():
                         type=str,
                         help='where to save the checkpoint')
     parser.add_argument('--bart_model',
-                        default='facebook/bart-large',
+                        default='facebook/bart-base',
                         type=str,
                         help='bart pretrain model')
     # path

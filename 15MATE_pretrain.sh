@@ -9,7 +9,7 @@ python twitter_ae_training.py \
           --eval_every 1 \
           --lr ${sl} \
           --batch_size 16  \
-          --epochs 50 \
+          --epochs 35 \
           --grad_clip 5 \
           --warmup 0.1 \
           --is_sample 0 \
