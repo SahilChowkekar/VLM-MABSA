@@ -27,7 +27,7 @@ import numpy as np
 import torch.backends.cudnn as cudnn
 import wandb
 
-wandb.init(project='Twitter-2015')
+wandb.init(project='Twitter-2017')
 config = wandb.config
 
 
