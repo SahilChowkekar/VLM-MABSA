@@ -4,20 +4,43 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers.modeling_bart import *
-from src.model.modeling_bart import (
-    SinusoidalPositionalEmbedding,
-    LearnedPositionalEmbedding,
-    invert_mask,
-    EncoderLayer,
-    LayerNorm,
-)
-from src.model.modeling_bart import (PretrainedBartModel, BartDecoder,
-                                     BartClassificationHead,
-                                     _make_linear_from_emb,
-                                     _prepare_bart_decoder_inputs)
 from src.model.config import MultiModalBartConfig
+from src.model.modeling_bart import (BartClassificationHead, BartDecoder,
+                                     EncoderLayer, LayerNorm,
+                                     LearnedPositionalEmbedding,
+                                     PretrainedBartModel,
+                                     SinusoidalPositionalEmbedding,
+                                     _make_linear_from_emb,
+                                     _prepare_bart_decoder_inputs, invert_mask)
+from transformers.modeling_bart import *
 
+class BartPooler(nn.Module):
+    def __init__(self, config):
+        super(BartPooler, self).__init__()
+        dense = nn.Linear(100, 100)
+        activation = nn.Tanh()
+
+    def forward(self, hidden_states):
+        # We "pool" the model by simply taking the hidden state corresponding
+        # to the first token.
+        first_token_tensor = hidden_states[:, 0]
+        pooled_output = self.dense(first_token_tensor)
+        pooled_output = self.activation(pooled_output)
+        return pooled_output
+
+class BartTextPooler(nn.Module):
+    def __init__(self, config):
+        super(BartTextPooler, self).__init__()
+        dense = nn.Linear(100, 100)
+        activation = nn.Tanh()
+
+    def forward(self, hidden_states):
+        # We "pool" the model by simply taking the hidden state corresponding
+        # to the first token of text.
+        first_token_tensor = hidden_states[:, 1]
+        pooled_output = self.dense(first_token_tensor)
+        pooled_output = self.activation(pooled_output)
+        return pooled_output
 
 class ImageEmbedding(nn.Module):
     def __init__(self, image_dim, final_dim):
@@ -53,7 +76,7 @@ class MultiModalBartEncoder(nn.Module):
         config: MultiModalBartConfig
     """
     def __init__(self, config: MultiModalBartConfig, encoder, img_feat_id,
-                 cls_token_id):
+                 cls_token_id, pooling=None):
         super().__init__()
 
         self.img_feat_id = img_feat_id
@@ -77,6 +100,19 @@ class MultiModalBartEncoder(nn.Module):
         self.layernorm_embedding = encoder.layernorm_embedding
         # mbart has one extra layer_norm
         self.layer_norm = encoder.layer_norm
+        self.pooling = pooling
+        if self.pooling is not None:
+            if self.pooling == "cls":
+                self.text_pooler = BartTextPooler(config)
+                self.classifier = nn.Linear(100, 3)
+            elif self.pooling == "first":
+                self.img_pooler = BartPooler(config)
+                self.classifier = nn.Linear(100, 3)
+            else:
+                self.text_pooler = BartTextPooler(config)
+                self.img_pooler = BartPooler(config)
+                self.classifier = nn.Linear(100 * 2, 3)
+
 
     def _embed_multi_modal(self, input_ids, image_features):
         """embed textual and visual inputs and combine them into one embedding"""
