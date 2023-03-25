@@ -9,12 +9,12 @@ python twitter_sc_training.py \
           --eval_every 1 \
           --lr ${sl} \
           --batch_size 16  \
-          --epochs 35 \
+          --epochs 50 \
           --grad_clip 5 \
           --warmup 0.1 \
           --is_sample 0 \
           --seed 42 \
           --text_only 0 \
           --task twitter_sc \
-         --checkpoint ./checkpoint/pytorch_model.bin
+         --checkpoint ../pytorch_model.bin
 done

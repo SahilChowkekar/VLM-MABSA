@@ -1,8 +1,10 @@
-import torch
-import numpy as np
-from transformers import BartTokenizer, AutoTokenizer
-from itertools import chain
 from functools import cmp_to_key
+from itertools import chain
+
+import numpy as np
+import torch
+from transformers import AutoTokenizer, BartTokenizer
+
 # from src.utils import TaskType
 
 
@@ -19,7 +21,7 @@ class ConditionTokenizer:
     """
     def __init__(self,
                  args,
-                 pretrained_model_name='./E2E-MABSA',
+                 pretrained_model_name='facebook/bart-base',
                  cls_token="<<cls>>",
                  mlm_token="<<mlm>>",
                  mrm_token="<<mrm>>",

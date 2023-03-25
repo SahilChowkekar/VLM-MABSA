@@ -1,30 +1,36 @@
 import argparse
 import json
 import os
-from datetime import datetime
-from torch import optim
-import torch
-import torch.multiprocessing as mp
-from torch.cuda.amp import GradScaler
-from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.utils.data import DataLoader, ConcatDataset
-from torch.utils.data.distributed import DistributedSampler
-from torch.utils.tensorboard import SummaryWriter
-from transformers import AdamW
 import random
+from datetime import datetime
+
+import numpy as np
+import src.eval_utils as eval_utils
+import torch
+import torch.backends.cudnn as cudnn
+import torch.multiprocessing as mp
+import wandb
 from src.data.collation import Collator
 from src.data.dataset import MVSA_Dataset, Twitter_Dataset
 from src.data.tokenization_new import ConditionTokenizer
 from src.model.config import MultiModalBartConfig
+from src.model.generater import SequenceGeneratorModel
 from src.model.MAESC_model import MultiModalBartModel_AESC
+from src.model.metrics import AESCSpanMetric
 from src.model.model import MultiModalBartModelForPretrain
 from src.training import fine_tune
-from src.utils import Logger, save_training_data, load_training_data, setup_process, cleanup_process
-from src.model.metrics import AESCSpanMetric
-from src.model.generater import SequenceGeneratorModel
-import src.eval_utils as eval_utils
-import numpy as np
-import torch.backends.cudnn as cudnn
+from src.utils import (Logger, cleanup_process, load_training_data,
+                       save_training_data, setup_process)
+from torch import optim
+from torch.cuda.amp import GradScaler
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import ConcatDataset, DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torch.utils.tensorboard import SummaryWriter
+from transformers import AdamW
+
+wandb.init(project='Twitter-2015')
+config = wandb.config
 
 
 def main(rank, args):
@@ -207,9 +213,17 @@ def main(rank, args):
             logger.info('DEV  aesc_p:{} aesc_r:{} aesc_f:{}'.format(
                 res_dev['aesc_pre'], res_dev['aesc_rec'], res_dev['aesc_f']))
 
+            wandb.log({"Dev_AESC_Pre" : res_dev['aesc_pre']})
+            wandb.log({"Dev_AESC_R" : res_dev['aesc_rec']})
+            wandb.log({"Dev_AESC_F": res_dev['aesc_f']})
+
             logger.info('TEST  aesc_p:{} aesc_r:{} aesc_f:{}'.format(
                 res_test['aesc_pre'], res_test['aesc_rec'],
                 res_test['aesc_f']))
+
+            wandb.log({"Test_AESC_Pre" : res_test['aesc_pre']})
+            wandb.log({"Test_AESC_Pre" : res_test['aesc_rec']})
+            wandb.log({"Test_AESC_F": res_test['aesc_f']})
 
             save_flag = False
             if best_dev_res is None:
@@ -272,7 +286,7 @@ def parse_args():
                         type=str,
                         help='where to save the checkpoint')
     parser.add_argument('--bart_model',
-                        default='facebook/bart-base',
+                        default='facebook/bart-large',
                         type=str,
                         help='bart pretrain model')
     # path

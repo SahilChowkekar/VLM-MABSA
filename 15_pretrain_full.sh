@@ -10,9 +10,9 @@ do
           --eval_every 1 \
           --lr ${sl} \
           --batch_size 16  \
-          --epochs 35 \
+          --epochs 50 \
           --grad_clip 5 \
           --warmup 0.1 \
           --seed 66 \
-          --checkpoint ./checkpoint/pytorch_model.bin
+          --checkpoint ../pytorch_model.bin
 done

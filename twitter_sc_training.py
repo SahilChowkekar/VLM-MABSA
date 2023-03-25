@@ -1,31 +1,36 @@
 import argparse
 import json
 import os
-from datetime import datetime
-from torch import optim
-import torch
-import torch.multiprocessing as mp
-from torch.cuda.amp import GradScaler
-from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.utils.data import DataLoader, ConcatDataset
-from torch.utils.data.distributed import DistributedSampler
-from torch.utils.tensorboard import SummaryWriter
-from transformers import AdamW
 import random
+from datetime import datetime
+
+import numpy as np
+import src.eval_utils as eval_utils
+import torch
+import torch.backends.cudnn as cudnn
+import torch.multiprocessing as mp
 from src.data.collation import Collator
 from src.data.dataset import MVSA_Dataset, Twitter_Dataset
 from src.data.tokenization_new import ConditionTokenizer
 from src.model.config import MultiModalBartConfig
+from src.model.generater import SequenceGeneratorModel
 from src.model.MAESC_model import MultiModalBartModel_AESC
+from src.model.metrics import AESCSpanMetric, OESpanMetric
 from src.model.model import MultiModalBartModelForPretrain
 from src.training import fine_tune
-from src.utils import Logger, save_training_data, load_training_data, setup_process, cleanup_process
-from src.model.metrics import AESCSpanMetric, OESpanMetric
-from src.model.generater import SequenceGeneratorModel
-import src.eval_utils as eval_utils
-import numpy as np
-import torch.backends.cudnn as cudnn
+from src.utils import (Logger, cleanup_process, load_training_data,
+                       save_training_data, setup_process)
+from torch import optim
+from torch.cuda.amp import GradScaler
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import ConcatDataset, DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torch.utils.tensorboard import SummaryWriter
+from transformers import AdamW
+import wandb
 
+wandb.init(project='Twitter-2015')
+config = wandb.config
 
 def main(rank, args):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -230,11 +235,32 @@ def main(rank, args):
             logger.info('DEV  sc_p:{} sc_r:{} sc_f:{}'.format(
                 res_dev['sc_pre'], res_dev['sc_rec'], res_dev['sc_f']))
             logger.info('DEV  sc_acc:{}'.format(res_dev['sc_acc']))
+
+            wandb.log({"Dev_AE_P" : res_dev['ae_pre']})
+            wandb.log({"Dev_AE_R" : res_dev['ae_rec']})
+            wandb.log({"Dev_AE_F": res_dev['ae_f']})
+
+            wandb.log({"Dev_SC_Pre" : res_dev['sc_pre']})
+            wandb.log({"Dev_SC_R" : res_dev['sc_rec']})
+            wandb.log({"Dev_SC_F": res_dev['sc_f']})
+
+            wandb.log({"Dev_SC_Accuracy": res_dev['sc_acc']})
+
             logger.info('TEST  ae_p:{} ae_r:{} ae_f:{}'.format(
                 res_test['ae_pre'], res_test['ae_rec'], res_test['ae_f']))
             logger.info('TEST  sc_p:{} sc_r:{} sc_f:{}'.format(
                 res_test['sc_pre'], res_test['sc_rec'], res_test['sc_f']))
             logger.info('TEST  sc_acc:{}'.format(res_test['sc_acc']))
+
+            wandb.log({"Test_AE_P" : res_test['ae_pre']})
+            wandb.log({"Test_AE_R" : res_test['ae_rec']})
+            wandb.log({"Test_AE_F": res_test['ae_f']})
+
+            wandb.log({"Test_SC_Pre" : res_test['sc_pre']})
+            wandb.log({"Test_SC_R" : res_test['sc_rec']})
+            wandb.log({"Test_SC_F": res_test['sc_f']})
+
+            wandb.log({"Test_SC_Accuracy": res_test['sc_acc']})
 
             # logger.info('DEV  ae_p:{} ae_r:{} ae_f:{}'.format(
             #     res_dev['ae_pre'], res_dev['ae_rec'], res_dev['ae_f']))
@@ -310,7 +336,7 @@ def parse_args():
                         type=str,
                         help='where to save the checkpoint')
     parser.add_argument('--bart_model',
-                        default='facebook/bart-base',
+                        default='facebook/bart-large',
                         type=str,
                         help='bart pretrain model')
     # path

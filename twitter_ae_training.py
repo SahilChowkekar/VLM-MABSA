@@ -25,6 +25,10 @@ from src.model.generater import SequenceGeneratorModel
 import src.eval_utils as eval_utils
 import numpy as np
 import torch.backends.cudnn as cudnn
+import wandb
+
+wandb.init(project='Twitter-2017')
+config = wandb.config
 
 
 def main(rank, args):
@@ -224,6 +228,14 @@ def main(rank, args):
                 res_dev['oe_pre'], res_dev['oe_rec'], res_dev['oe_f']))
             logger.info('TEST  ae_p:{} ae_r:{} ae_f:{}'.format(
                 res_test['oe_pre'], res_test['oe_rec'], res_test['oe_f']))
+
+            wandb.log({"Dev_AE_P" : res_dev['oe_pre']})
+            wandb.log({"Dev_AE_R" : res_dev['oe_rec']})
+            wandb.log({"Dev_AE_F": res_dev['oe_f']})
+
+            wandb.log({"Test_AE_P" : res_test['oe_pre']})
+            wandb.log({"Test_AE_R" : res_test['oe_rec']})
+            wandb.log({"Test_AE_F": res_test['oe_f']})
             # logger.info('DEV  ae_p:{} ae_r:{} ae_f:{}'.format(
             #     res_dev['ae_pre'], res_dev['ae_rec'], res_dev['ae_f']))
             save_flag = False
