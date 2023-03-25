@@ -1,11 +1,26 @@
 # Vision-Language Pre-Training for Multimodal Aspect-Based Sentiment Analysis(VLP-MABSA)
 Codes and datasets for our ACL'2022 paper:[Vision-Language Pre-Training for Multimodal Aspect-Based Sentiment Analysis](https://aclanthology.org/2022.acl-long.152/)
 
-Author
+Original Author - Yan Ling (ylin@njust.edu.cn)
 
-Yan Ling
+Made changes by Priyanshu Sharma (pshar053@ucr.edu) and Sahil Chowkekar (schow064@ucr.edu)
 
-ylin@njust.edu.cn
+## Change Logs
+
+Mar 24, 2023
+
+> Added comparision of different BERT-based model with BART-based approaches for Multimodal Sentiment Analysis.
+
+## Details
+- We are inspired by the pooling techniques used in TomBERT in order to concatenate the visual and textual features and used the same in BART-based method.
+- We also found out that our result with pooling technique are better with BART-based approaches as compared to BERT-based one.
+- For more details you guys can view the results of all the experiments in the results folder.
+- BART - Twitter-2015 - https://wandb.ai/pshar053/Twitter-2015?workspace=user-pshar053
+- BART - Twitter-2017 - https://wandb.ai/pshar053/Twitter-2017?workspace=user-pshar053
+- BART - With Pooling Technique - https://wandb.ai/pshar053/Pretraining-BART?workspace=user-pshar053
+- We have already merged our all the code changes related our all the experiments in the master branch.
+You guys can track that using the recently merged Pull Requests.
+- We have also added the further detail of basic code setup. Follow the following documentation precisely in order to replicate the exact results.
 
 ## Data Processing
 The pre-training dataset we use is MVSA-Multi. You can get from this [git](https://github.com/xunan0812/MultiSentiNet). At first, you need to use the judgement rules provided by the git to remove the samples with inconsistent labels.
@@ -94,5 +109,9 @@ The following is the description of some parameters of the above shell
 --checkpoint        path of the pre-training model
 ```
 We also provide our training logs on two datasets in folder **./log**.  
-## Acknowledgements
-- Some codes are based on the codes of [BARTABSA](https://github.com/yhcc/BARTABSA) and [KM-BART](https://github.com/FomalhautB/KM-BART), many thanks!
+## Results with Pooling Technique
+
+We have made some of the changes in order to accomodate the pooling layer
+across both the modalities. For us, with 35 epoch BART-Base with First Pooling Technique outperform all the previous techniques, Both Pooling give marginally degraded performance as compare to the First Pooling, whereas with CLS pooling our performance degraded significantly.
+
+- Other details related to the experiments are already added in the final report.
